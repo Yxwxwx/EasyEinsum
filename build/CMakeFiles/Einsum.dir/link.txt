@@ -1,3 +1,0 @@
-"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\Einsum.dir/objects.a
-D:\mingw64\bin\ar.exe qc CMakeFiles\Einsum.dir/objects.a @CMakeFiles\Einsum.dir\objects1.rsp
-D:\mingw64\bin\g++.exe -O3 -DNDEBUG -Wl,--whole-archive CMakeFiles\Einsum.dir/objects.a -Wl,--no-whole-archive -o Einsum.exe -Wl,--out-implib,libEinsum.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\Einsum.dir\linkLibs.rsp

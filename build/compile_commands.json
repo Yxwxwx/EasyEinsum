@@ -1,8 +1,0 @@
-[
-{
-  "directory": "E:/code/EasyEinsum/build",
-  "command": "D:\\mingw64\\bin\\g++.exe  @CMakeFiles/Einsum.dir/includes_CXX.rsp -O3 -DNDEBUG -std=gnu++17 -o CMakeFiles\\Einsum.dir\\main.cpp.obj -c E:\\code\\EasyEinsum\\main.cpp",
-  "file": "E:/code/EasyEinsum/main.cpp",
-  "output": "CMakeFiles/Einsum.dir/main.cpp.obj"
-}
-]
