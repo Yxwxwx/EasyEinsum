@@ -1,3 +1,0 @@
-E:/code/EasyEinsum/build/CMakeFiles/Einsum.dir
-E:/code/EasyEinsum/build/CMakeFiles/edit_cache.dir
-E:/code/EasyEinsum/build/CMakeFiles/rebuild_cache.dir

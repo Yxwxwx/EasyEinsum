@@ -1,1 +1,0 @@
- E:/code/EasyEinsum/ThirdParty/googletest/lib/libgtest.a E:/code/EasyEinsum/ThirdParty/googletest/lib/libgtest_main.a E:/code/EasyEinsum/ThirdParty/googletest/lib/libgmock.a E:/code/EasyEinsum/ThirdParty/googletest/lib/libgmock_main.a -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 

@@ -125,9 +125,7 @@ std::vector<size_t> find_indices(const std::string& result_indices, const std::s
             indices.push_back(pos);
         }
     }
-    for (auto &i : indices) {
-        std::cout << i << " ";
-    }
+
     return indices;
 }
 
@@ -231,9 +229,9 @@ NDArray<T, ResultDim> einsum(const std::string& einsum_str,
     }
     result.resize(result_dimensions);    
 
-    Eigen::ThreadPool pool(8 /* number of threads in pool */);
+    Eigen::ThreadPool pool(12 /* number of threads in pool */);
 
-    Eigen::ThreadPoolDevice my_device(&pool, 4 /* number of threads to use */);
+    Eigen::ThreadPoolDevice my_device(&pool, 12 /* number of threads to use */);
     result.device(my_device) = I.contract(D, contract_dims);
 
     for (std::size_t i = 0; i < ResultDim; ++i) {
