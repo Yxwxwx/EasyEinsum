@@ -15,6 +15,7 @@
 #include <string>
 #include <vector>
 
+namespace YXTensor {
 // main functions
 template <typename TensorType>
 bool tensor_equal(const TensorType &tensor1, const TensorType &tensor2,
@@ -26,6 +27,7 @@ Eigen::Tensor<TensorType, ResultDim>
 einsum(const std::string &einsum_str,
        const Eigen::Tensor<TensorType, Dim1> &input1,
        const Eigen::Tensor<TensorType, Dim2> &input2);
+// namespace Tensor
 
 // Print formatted values
 /**
@@ -301,5 +303,5 @@ einsum(const std::string &einsum_str,
     return result.shuffle(shuffle_array);
   }
 }
-
+} // namespace YXTensor
 #endif

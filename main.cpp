@@ -20,7 +20,7 @@ TEST(EinsumTest, SmallTest) {
     }
   }
 
-  auto result = einsum<1, int, 4, 2, 4>("pqrs,rk->qpks", I, D);
+  auto result = YXTensor::einsum<1, int, 4, 2, 4>("pqrs,rk->qpks", I, D);
 
   Eigen::Tensor<int, 4> E(2, 2, 2, 2);
 
@@ -38,7 +38,7 @@ TEST(EinsumTest, SmallTest) {
     }
   }
 
-  ASSERT_TRUE(tensor_equal(result, E));
+  ASSERT_TRUE(YXTensor::tensor_equal(result, E));
 }
 
 TEST(EinsumTest, LargeTest) {
@@ -69,7 +69,7 @@ TEST(EinsumTest, LargeTest) {
 
   // 计算 einsum
   auto start = std::chrono::steady_clock::now();
-  auto result = einsum<1, int, 4, 3, 5>("abcd,def->abcef", I, D);
+  auto result = YXTensor::einsum<1, int, 4, 3, 5>("abcd,def->abcef", I, D);
   auto end = std::chrono::steady_clock::now();
   auto einsum_time =
       std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
@@ -96,7 +96,7 @@ TEST(EinsumTest, LargeTest) {
       std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
           .count();
 
-  ASSERT_TRUE(tensor_equal(result, E) && for_loop_time > einsum_time);
+  ASSERT_TRUE(YXTensor::tensor_equal(result, E) && for_loop_time > einsum_time);
 }
 
 TEST(EinsumTest, LargeTensorTest) {
@@ -126,7 +126,7 @@ TEST(EinsumTest, LargeTensorTest) {
 
   // 计算 einsum
   auto start = std::chrono::steady_clock::now();
-  auto result = einsum<2, double, 4, 2, 2>("prqs,rs->pq", I, D);
+  auto result = YXTensor::einsum<2, double, 4, 2, 2>("prqs,rs->pq", I, D);
   auto end = std::chrono::steady_clock::now();
   auto einsum_time =
       std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
@@ -149,7 +149,7 @@ TEST(EinsumTest, LargeTensorTest) {
       std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
           .count();
 
-  ASSERT_TRUE(tensor_equal(result, E) && for_loop_time > einsum_time);
+  ASSERT_TRUE(YXTensor::tensor_equal(result, E) && for_loop_time > einsum_time);
 }
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
