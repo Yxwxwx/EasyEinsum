@@ -1,4 +1,5 @@
 #include "einsum.hpp"
+#include "unsupported/Eigen/CXX11/src/Tensor/Tensor.h"
 #include <chrono>
 #include <gtest/gtest.h>
 #include <omp.h>
@@ -151,6 +152,46 @@ TEST(EinsumTest, LargeTensorTest) {
 
   ASSERT_TRUE(YXTensor::tensor_equal(result, E) && for_loop_time > einsum_time);
 }
+
+TEST(EinsumTest, EinsumReload) {
+  Eigen::Tensor<int, 4> I(2, 2, 2, 2);
+  Eigen::Tensor<int, 2> D(2, 2);
+  Eigen::Tensor<int, 4> result;
+
+// 填充张量
+#pragma omp parallel for collapse(4)
+  for (int p = 0; p < 2; ++p) {
+    for (int q = 0; q < 2; ++q) {
+      for (int r = 0; r < 2; ++r) {
+        for (int s = 0; s < 2; ++s) {
+          I(p, q, r, s) = p + q + r + s;
+          D(r, s) = r + s + p + q; // Example modification for D
+        }
+      }
+    }
+  }
+
+  YXTensor::einsum<1, int, 4, 2, 4>("pqrs,rk->qpks", I, D, result);
+
+  Eigen::Tensor<int, 4> E(2, 2, 2, 2);
+
+#pragma omp parallel for collapse(4)
+  for (int q = 0; q < 2; ++q) {
+    for (int p = 0; p < 2; ++p) {
+      for (int k = 0; k < 2; ++k) {
+        for (int s = 0; s < 2; ++s) {
+          E(q, p, k, s) = 0;            // Initialize E element
+          for (int r = 0; r < 2; ++r) { // Correct upper bound for r
+            E(q, p, k, s) += I(p, q, r, s) * D(r, k);
+          }
+        }
+      }
+    }
+  }
+
+  ASSERT_TRUE(YXTensor::tensor_equal(result, E));
+}
+
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

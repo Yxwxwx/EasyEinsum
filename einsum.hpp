@@ -27,6 +27,14 @@ Eigen::Tensor<TensorType, ResultDim>
 einsum(const std::string &einsum_str,
        const Eigen::Tensor<TensorType, Dim1> &input1,
        const Eigen::Tensor<TensorType, Dim2> &input2);
+
+template <int num_contractions, typename TensorType, int Dim1, int Dim2,
+          int ResultDim>
+void einsum(const std::string &einsum_str,
+            const Eigen::Tensor<TensorType, Dim1> &input1,
+            const Eigen::Tensor<TensorType, Dim2> &input2,
+            const Eigen::Tensor<TensorType, ResultDim> &result_input);
+
 // namespace Tensor
 
 // Print formatted values
@@ -303,5 +311,54 @@ einsum(const std::string &einsum_str,
     return result.shuffle(shuffle_array);
   }
 }
+
+template <int num_contractions, typename TensorType, int Dim1, int Dim2,
+          int ResultDim>
+void einsum(const std::string &einsum_str,
+            const Eigen::Tensor<TensorType, Dim1> &input1,
+            const Eigen::Tensor<TensorType, Dim2> &input2,
+            Eigen::Tensor<TensorType, ResultDim> &result_input) {
+  std::vector<size_t> left_idx;
+  std::vector<size_t> right_idx;
+  std::vector<size_t> shuffle_idx;
+  std::string result_indices;
+
+  auto idx_pairs = parse_einsum_string<TensorType>(
+      einsum_str, result_indices, shuffle_idx, left_idx, right_idx);
+
+  if (num_contractions != idx_pairs.size()) {
+    throw std::invalid_argument("Invalid number of contractions");
+  }
+
+  Eigen::array<Eigen::IndexPair<int>, num_contractions> contract_dims;
+  std::copy(idx_pairs.begin(), idx_pairs.end(), contract_dims.begin());
+  Eigen::Tensor<TensorType, ResultDim> result;
+  Eigen::array<Eigen::Index, ResultDim> result_dimensions;
+
+  if (ResultDim != left_idx.size() + right_idx.size()) {
+    throw std::invalid_argument("Invalid number of dimensions in result");
+  }
+
+  std::transform(left_idx.begin(), left_idx.end(), result_dimensions.begin(),
+                 [&](size_t idx) { return input1.dimension(idx); });
+
+  std::transform(right_idx.begin(), right_idx.end(),
+                 result_dimensions.begin() + left_idx.size(),
+                 [&](size_t idx) { return input2.dimension(idx); });
+  result.resize(result_dimensions);
+
+  Eigen::ThreadPool pool(12);
+  Eigen::ThreadPoolDevice my_device(&pool, 12);
+  result.device(my_device) = input1.contract(input2, contract_dims);
+
+  if (shuffle_idx.empty()) {
+    result_input = result;
+  } else {
+    Eigen::array<int, ResultDim> shuffle_array;
+    std::copy(shuffle_idx.begin(), shuffle_idx.end(), shuffle_array.begin());
+    result_input = result.shuffle(shuffle_array);
+  }
+}
+
 } // namespace YXTensor
 #endif
