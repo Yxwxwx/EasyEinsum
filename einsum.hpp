@@ -267,9 +267,9 @@ parse_einsum_string(const std::string &einsum_str, std::string &result_indices,
 template <int num_contractions, typename TensorType, int Dim1, int Dim2,
           int ResultDim>
 Eigen::Tensor<TensorType, ResultDim>
-einsum(const std::string &einsum_str,
-       const Eigen::Tensor<TensorType, Dim1> &input1,
-       const Eigen::Tensor<TensorType, Dim2> &input2) {
+einsum(std::string &&einsum_str, Eigen::Tensor<TensorType, Dim1> &&input1,
+       Eigen::Tensor<TensorType, Dim2> &&input2) {
+
   std::vector<size_t> left_idx;
   std::vector<size_t> right_idx;
   std::vector<size_t> shuffle_idx;
@@ -301,7 +301,8 @@ einsum(const std::string &einsum_str,
 
   Eigen::ThreadPool pool(12);
   Eigen::ThreadPoolDevice my_device(&pool, 12);
-  result.device(my_device) = input1.contract(input2, contract_dims);
+  result.device(my_device) =
+      std::move(input1).contract(std::move(input2), contract_dims);
 
   if (shuffle_idx.empty()) {
     return result;
@@ -311,13 +312,12 @@ einsum(const std::string &einsum_str,
     return result.shuffle(shuffle_array);
   }
 }
-
 template <int num_contractions, typename TensorType, int Dim1, int Dim2,
           int ResultDim>
-void einsum(const std::string &einsum_str,
-            const Eigen::Tensor<TensorType, Dim1> &input1,
-            const Eigen::Tensor<TensorType, Dim2> &input2,
-            Eigen::Tensor<TensorType, ResultDim> &result_input) {
+void einsum(const std::string &&einsum_str,
+            const Eigen::Tensor<TensorType, Dim1> &&input1,
+            const Eigen::Tensor<TensorType, Dim2> &&input2,
+            Eigen::Tensor<TensorType, ResultDim> &&result_input) {
   std::vector<size_t> left_idx;
   std::vector<size_t> right_idx;
   std::vector<size_t> shuffle_idx;
@@ -349,7 +349,8 @@ void einsum(const std::string &einsum_str,
 
   Eigen::ThreadPool pool(12);
   Eigen::ThreadPoolDevice my_device(&pool, 12);
-  result.device(my_device) = input1.contract(input2, contract_dims);
+  result.device(my_device) =
+      std::move(input1).contract(std::move(input2), contract_dims);
 
   if (shuffle_idx.empty()) {
     result_input = result;
