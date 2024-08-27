@@ -11,9 +11,21 @@
 // C++ std
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 #include <stdexcept>
 #include <string>
 #include <vector>
+
+// 定义宏来获取 OMP_NUM_THREADS，如果未设置，则使用本地 CPU 的线程数
+#define GET_OMP_NUM_THREADS(n_thread)                                          \
+  do {                                                                         \
+    const char *omp_env_var = std::getenv("OMP_NUM_THREADS");                  \
+    if (omp_env_var) {                                                         \
+      n_thread = std::atoi(omp_env_var);                                       \
+    } else {                                                                   \
+      n_thread = std::thread::hardware_concurrency();                          \
+    }                                                                          \
+  } while (0)
 
 namespace YXTensor {
 // main functions
@@ -299,8 +311,12 @@ einsum(std::string &&einsum_str, Eigen::Tensor<TensorType, Dim1> &&input1,
                  [&](size_t idx) { return input2.dimension(idx); });
   result.resize(result_dimensions);
 
-  Eigen::ThreadPool pool(12);
-  Eigen::ThreadPoolDevice my_device(&pool, 12);
+  int n_thread;
+  GET_OMP_NUM_THREADS(n_thread);
+  std::cout << "Number of threads to use: " << n_thread << std::endl;
+
+  Eigen::ThreadPool pool(n_thread);
+  Eigen::ThreadPoolDevice my_device(&pool, n_thread);
   result.device(my_device) =
       std::move(input1).contract(std::move(input2), contract_dims);
 
@@ -347,8 +363,12 @@ void einsum(const std::string &&einsum_str,
                  [&](size_t idx) { return input2.dimension(idx); });
   result.resize(result_dimensions);
 
-  Eigen::ThreadPool pool(12);
-  Eigen::ThreadPoolDevice my_device(&pool, 12);
+  int n_thread;
+  GET_OMP_NUM_THREADS(n_thread);
+  std::cout << "Number of threads to use: " << n_thread << std::endl;
+
+  Eigen::ThreadPool pool(n_thread);
+  Eigen::ThreadPoolDevice my_device(&pool, n_thread);
   result.device(my_device) =
       std::move(input1).contract(std::move(input2), contract_dims);
 
