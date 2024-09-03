@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.27)
+cmake_minimum_required(VERSION 3.28)
 
 # 设置项目名称和语言
 project(Einsum LANGUAGES CXX)
