@@ -1,0 +1,51 @@
+CompileFlags:
+  # Treat code as C++, use C++20 standard, enable more warnings.
+  Add: 
+    - "-xc++"
+    - "-std=c++20"
+    - "-Wall" 
+    - "-Wno-missing-prototypes" 
+    - "-Wno-unknown-warning-option"
+
+
+  Remove:
+    - "--extended-lambda"
+    - "--generate-code=arch=compute_89,code=[compute_89,sm_89]"
+    - "-rdc=true"
+    - "-forward-unknown-to-host-compiler"
+    - "--expt-relaxed-constexpr"
+    - "-arch=native"
+    - "--options-file"
+    - "-Xcompiler=-fPIE"
+    - "-mabi"
+    - "-Werror"
+    - "-fmodules-ts"
+    - "-fmodule-mapper=*"
+    - "-fdeps-format=*" 
+    - "-Wno-undeclared_var_use"
+    - "--use_fast_math"
+
+Diagnostics:
+  
+  ClangTidy:
+    Add: [performance*, modernize*, readability*]
+    Remove: [modernize-use-trailing-return-type]
+  
+  Suppress: 
+    - "no_member_suggest"          
+    - "non_template_in_template_id"  
+    - "pp_file_not_found"
+    - "no_member_template_suggest"
+    - "builtin_definition"
+
+InlayHints:
+  Enabled: true
+  ParameterNames: true
+  DeducedTypes: true
+  Designators: true
+
+Completion:
+  AllScopes: true
+
+If:
+  PathExclude: /home/Yxwxwx/code/EasyEinsum/external/.*

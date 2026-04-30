@@ -1,0 +1,11 @@
+build/
+old/
+.vscode/
+.cache/
+.DS_Store
+example/
+external/
+__pycache__/
+*.so
+*.lib
+*.a
